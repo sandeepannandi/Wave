@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Line } from 'react-native-svg';
 import BlueTick from '../assets/bluetick.svg';
@@ -42,6 +42,12 @@ export default function Onboarding2({ onContinue }: Onboarding2Props) {
         </View>
 
         <View style={styles.middleSection}>
+        {/* Background illustration behind the checklist */}
+        <Image
+          source={require('../assets/onboarding2asset.jpg')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+        />
           <View style={styles.waveGraphic}>
             <View style={styles.checklistItem}>
               <View style={styles.checkboxWrapper}>
@@ -134,6 +140,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 40,
     position: 'relative',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    zIndex: 0,
+    width: '100%',
+    maxHeight: 400,
+    alignSelf: 'center',
+    top: -10,
   },
   waveGraphic: {
     alignItems: 'center',

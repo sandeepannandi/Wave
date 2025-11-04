@@ -13,7 +13,6 @@ export default function App() {
   const slideAnim1 = useRef(new Animated.Value(0)).current;
   const slideAnim2 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const slideAnim3 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
-  const slideAnim4 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
 
   const handleNext = () => {
     Animated.parallel([
@@ -49,36 +48,18 @@ export default function App() {
     });
   };
 
-  const handleContinueTo4 = () => {
-    Animated.parallel([
-      Animated.timing(slideAnim3, {
-        toValue: -SCREEN_WIDTH,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim4, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setCurrentScreen(4);
-    });
-  };
+  // No fourth screen in the flow; screen 3 is the carousel (Onboarding4)
 
   useEffect(() => {
     if (currentScreen === 1) {
       slideAnim1.setValue(0);
       slideAnim2.setValue(SCREEN_WIDTH);
       slideAnim3.setValue(SCREEN_WIDTH);
-      slideAnim4.setValue(SCREEN_WIDTH);
     } else if (currentScreen === 2) {
       slideAnim2.setValue(0);
       slideAnim3.setValue(SCREEN_WIDTH);
-      slideAnim4.setValue(SCREEN_WIDTH);
     } else if (currentScreen === 3) {
       slideAnim3.setValue(0);
-      slideAnim4.setValue(SCREEN_WIDTH);
     }
   }, [currentScreen]);
 
@@ -113,16 +94,7 @@ export default function App() {
             },
           ]}
         >
-          <Onboarding3 onContinue={handleContinueTo4} />
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.screen,
-            {
-              transform: [{ translateX: slideAnim4 }],
-            },
-          ]}
-        >
+          {/* Screen 3 is the carousel */}
           <Onboarding4 onContinue={() => {}} />
         </Animated.View>
       </View>
