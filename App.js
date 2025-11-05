@@ -5,6 +5,7 @@ import Onboarding1 from './app/onboarding1';
 import Onboarding2 from './app/onboarding2';
 import Onboarding3 from './app/onboarding3';
 import Onboarding4 from './app/onboarding4';
+import Signup from './app/signup';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -13,6 +14,8 @@ export default function App() {
   const slideAnim1 = useRef(new Animated.Value(0)).current;
   const slideAnim2 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const slideAnim3 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
+  const slideAnim4 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
+  const slideAnim5 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
 
   const handleNext = () => {
     Animated.parallel([
@@ -48,18 +51,61 @@ export default function App() {
     });
   };
 
-  // No fourth screen in the flow; screen 3 is the carousel (Onboarding4)
+  const handleContinueToSignup = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim3, {
+        toValue: -SCREEN_WIDTH,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim4, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentScreen(4);
+    });
+  };
+
+  const handleSignupToOnboarding3 = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim4, {
+        toValue: -SCREEN_WIDTH,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim5, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentScreen(5);
+    });
+  };
 
   useEffect(() => {
     if (currentScreen === 1) {
       slideAnim1.setValue(0);
       slideAnim2.setValue(SCREEN_WIDTH);
       slideAnim3.setValue(SCREEN_WIDTH);
+      slideAnim4.setValue(SCREEN_WIDTH);
+      slideAnim5.setValue(SCREEN_WIDTH);
     } else if (currentScreen === 2) {
       slideAnim2.setValue(0);
       slideAnim3.setValue(SCREEN_WIDTH);
+      slideAnim4.setValue(SCREEN_WIDTH);
+      slideAnim5.setValue(SCREEN_WIDTH);
     } else if (currentScreen === 3) {
       slideAnim3.setValue(0);
+      slideAnim4.setValue(SCREEN_WIDTH);
+      slideAnim5.setValue(SCREEN_WIDTH);
+    } else if (currentScreen === 4) {
+      slideAnim4.setValue(0);
+      slideAnim5.setValue(SCREEN_WIDTH);
+    } else if (currentScreen === 5) {
+      slideAnim5.setValue(0);
     }
   }, [currentScreen]);
 
@@ -95,7 +141,27 @@ export default function App() {
           ]}
         >
           {/* Screen 3 is the carousel */}
-          <Onboarding4 onContinue={() => {}} />
+          <Onboarding4 onContinue={handleContinueToSignup} />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.screen,
+            {
+              transform: [{ translateX: slideAnim4 }],
+            },
+          ]}
+        >
+          <Signup onProviderPress={handleSignupToOnboarding3} />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.screen,
+            {
+              transform: [{ translateX: slideAnim5 }],
+            },
+          ]}
+        >
+          <Onboarding3 onContinue={() => {}} />
         </Animated.View>
       </View>
     </SafeAreaProvider>
