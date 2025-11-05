@@ -23,3 +23,20 @@ declare module '*.gif' {
   export default content;
 }
 
+declare module 'lottie-react-native' {
+  import { Component } from 'react';
+  import { ViewStyle } from 'react-native';
+  type LottieSource = number | { uri: string };
+  interface LottieViewProps {
+    source: LottieSource;
+    autoPlay?: boolean;
+    loop?: boolean;
+    style?: ViewStyle | ViewStyle[];
+    speed?: number;
+    progress?: number;
+    hardwareAccelerationAndroid?: boolean;
+    enableMergePathsAndroidForKitKatAndAbove?: boolean;
+  }
+  export default class LottieView extends Component<LottieViewProps> {}
+}
+

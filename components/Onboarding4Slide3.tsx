@@ -1,10 +1,17 @@
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function Onboarding4Slide3() {
   return (
     <View style={styles.container}>
+      <View style={styles.heroWrap}>
+        <Image
+          source={require('../assets/onboardingcar3asset.jpg')}
+          style={styles.heroImage}
+          resizeMode="cover"
+        />
+      </View>
       <Text style={styles.title}>Send Waves {'\n'} Anywhere</Text>
       <Text style={styles.description}>
         Export to email, OneNote, Notion, Evernote, {'\n'}and more wherever you need it.
@@ -19,7 +26,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
+  },
+  heroWrap: {
+    width: '100%',
+    height: 480,
+    marginTop: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontFamily: 'Archivo_700Bold',
@@ -33,6 +52,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Archivo_500Medium',
     fontSize: 15,
     lineHeight: 20,
+    paddingHorizontal: 20,
     textAlign: 'center',
     color: '#000',
   },

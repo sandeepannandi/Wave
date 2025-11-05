@@ -1,5 +1,7 @@
-import { StyleSheet, Text, View, Dimensions, Image } from 'react-native';
-import Svg, { Line } from 'react-native-svg';
+import React, { useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, Dimensions, Image, Animated as RNAnimated, Easing } from 'react-native';
+import Svg, { Line, Circle } from 'react-native-svg';
+import LottieView from 'lottie-react-native';
 import YouTube from '../assets/yt.jpg';
 import GMeet from '../assets/gmeet.jpg';
 import Teams from '../assets/teams.jpg';
@@ -11,7 +13,52 @@ import WaveIcon from '../assets/waveicon.svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+const AnimatedCircle = RNAnimated.createAnimatedComponent(Circle);
+
 export default function Onboarding4Slide1() {
+  const connectors = [
+    { x1: 152, y1: 180, x2: 70,  y2: 100 },
+    { x1: 190, y1: 180, x2: 190, y2: 80  },
+    { x1: 235, y1: 180, x2: 310, y2: 107 },
+    { x1: 252, y1: 300, x2: 310, y2: 330 },
+    { x1: 215, y1: 300, x2: 244, y2: 392 },
+    { x1: 132, y1: 300, x2: 70,  y2: 332 },
+    { x1: 170, y1: 300, x2: 140, y2: 390 },
+  ];
+
+  const anims = useRef<RNAnimated.Value[]>(connectors.map(() => new RNAnimated.Value(0))).current;
+
+  useEffect(() => {
+    const baseTravelDurationMs = 1000; // default travel
+    const startIntervalMs = 5000;      // next glow appears every 5s
+    const staggerMs = 240;             // stagger start times so circles don't move together
+
+    anims.forEach((anim: RNAnimated.Value, idx: number) => {
+      const startDelay = idx * staggerMs;
+      const travelDurationForIdx = idx === 1 ? 1800 : baseTravelDurationMs; // slow down 2nd connector
+      const idleDelayMs = Math.max(0, startIntervalMs - travelDurationForIdx - startDelay);
+
+      RNAnimated.loop(
+        RNAnimated.sequence([
+          RNAnimated.delay(startDelay),
+          RNAnimated.timing(anim, {
+            toValue: 1,
+            duration: travelDurationForIdx,
+            easing: Easing.linear,
+            useNativeDriver: false,
+          }),
+          // reset immediately to start position
+          RNAnimated.timing(anim, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: false,
+          }),
+          RNAnimated.delay(idleDelayMs),
+        ])
+      ).start();
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.heroWrap}>
@@ -24,20 +71,27 @@ export default function Onboarding4Slide1() {
         {/* Center recording card */}
         <View style={styles.centerCard}>
           <WaveIcon width={28} height={28} />
-          
+          <LottieView
+            style={styles.centerLottie}
+            source={{ uri: 'https://lottie.host/0a945edb-45a6-4428-a4c2-7bedbe7286d5/HwhE7cZW7V.lottie' }}
+            autoPlay
+            loop
+          />
           <Text style={styles.timerText}>00:01:24</Text>
         </View>
 
-        {/* Yellow connectors (star-like) */}
+        {/* Yellow connector animated glow */}
         <Svg style={styles.connector}>
-          <Line x1="152" y1="180" x2="70" y2="100" stroke="#FFF039" strokeWidth="3" />
-          <Line x1="190" y1="180" x2="190" y2="80" stroke="#FFF039" strokeWidth="3" />
-          <Line x1="235" y1="180" x2="310" y2="107" stroke="#FFF039" strokeWidth="3" />
-          <Line x1="252" y1="300" x2="310" y2="330" stroke="#FFF039" strokeWidth="3" />
-          <Line x1="215" y1="300" x2="244" y2="392" stroke="#FFF039" strokeWidth="3" />
-          <Line x1="132" y1="300" x2="70" y2="332" stroke="#FFF039" strokeWidth="3" />
-          <Line x1="170" y1="300" x2="140" y2="382" stroke="#FFF039" strokeWidth="3" />
-
+          {connectors.map((c, idx) => {
+            const cx = anims[idx].interpolate({ inputRange: [0, 1], outputRange: [c.x2, c.x1] });
+            const cy = anims[idx].interpolate({ inputRange: [0, 1], outputRange: [c.y2, c.y1] });
+            return (
+              <React.Fragment key={`conn-${idx}`}>
+                <Line x1={String(c.x1)} y1={String(c.y1)} x2={String(c.x2)} y2={String(c.y2)} stroke="#FFF039" strokeWidth="3" />
+                <AnimatedCircle cx={cx} cy={cy} r={4} fill="rgb(255, 174, 1)" />
+              </React.Fragment>
+            );
+          })}
         </Svg>
 
         {/* Outer icon boxes */}
@@ -126,10 +180,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   timerText: {
-    marginTop: 8,
-    fontFamily: 'Archivo_600SemiBold',
-    fontSize: 12,
+    marginTop: 2,
+    fontFamily: 'Archivo_700Bold',
+    fontSize: 15,
     color: '#000',
+  },
+  centerLottie: {
+    width: 130,
+    height: 40,
+    marginTop: 4,
   },
   connector: {
     position: 'absolute',
