@@ -34,7 +34,7 @@ export default function Onboarding4({ onContinue }: Onboarding4Props) {
         });
         return nextIndex;
       });
-    }, 500000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
