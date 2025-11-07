@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, Dimensions, Image, Animated as RNAnimated, Easing } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { StyleSheet, Text, View, Dimensions, Image, Animated, Easing } from 'react-native';
 import Svg, { Line, Circle } from 'react-native-svg';
 import LottieView from 'lottie-react-native';
 import YouTube from '../assets/yt.jpg';
@@ -13,51 +13,96 @@ import WaveIcon from '../assets/waveicon.svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const AnimatedCircle = RNAnimated.createAnimatedComponent(Circle);
+const BASE_TRAVEL_DURATION = 1200;
+const IDLE_INTERVAL = 3000;
+const DOT_RADIUS = 4.5;
+
+type Connector = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+};
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function Onboarding4Slide1() {
-  const connectors = [
-    { x1: 152, y1: 180, x2: 70,  y2: 100 },
-    { x1: 190, y1: 180, x2: 190, y2: 80  },
-    { x1: 235, y1: 180, x2: 310, y2: 107 },
-    { x1: 252, y1: 300, x2: 310, y2: 330 },
-    { x1: 215, y1: 300, x2: 244, y2: 392 },
-    { x1: 132, y1: 300, x2: 70,  y2: 332 },
-    { x1: 170, y1: 300, x2: 140, y2: 390 },
-  ];
+  const connectors = useMemo<Connector[]>(
+    () => [
+      { x1: 152, y1: 180, x2: 70,  y2: 100 },
+      { x1: 190, y1: 180, x2: 190, y2: 80  },
+      { x1: 235, y1: 180, x2: 310, y2: 107 },
+      { x1: 252, y1: 300, x2: 310, y2: 330 },
+      { x1: 215, y1: 300, x2: 244, y2: 392 },
+      { x1: 132, y1: 300, x2: 70,  y2: 332 },
+      { x1: 170, y1: 300, x2: 140, y2: 390 },
+    ],
+    [],
+  );
 
-  const anims = useRef<RNAnimated.Value[]>(connectors.map(() => new RNAnimated.Value(0))).current;
+  const anims = useRef<Animated.Value[]>(connectors.map(() => new Animated.Value(0))).current;
+  const timeoutRefs = useRef<Array<ReturnType<typeof setTimeout> | null>>(connectors.map(() => null));
+  const lottieRef = useRef<LottieView>(null);
+
+  const playLottie = () => {
+    const instance = lottieRef.current as unknown as {
+      reset?: () => void;
+      play?: () => void;
+    } | null;
+
+    instance?.reset?.();
+    instance?.play?.();
+  };
 
   useEffect(() => {
-    const baseTravelDurationMs = 1000; // default travel
-    const startIntervalMs = 5000;      // next glow appears every 5s
-    const staggerMs = 240;             // stagger start times so circles don't move together
+    const animationStops: Array<() => void> = [];
 
-    anims.forEach((anim: RNAnimated.Value, idx: number) => {
-      const startDelay = idx * staggerMs;
-      const travelDurationForIdx = idx === 1 ? 1800 : baseTravelDurationMs; // slow down 2nd connector
-      const idleDelayMs = Math.max(0, startIntervalMs - travelDurationForIdx - startDelay);
+    connectors.forEach((_, idx) => {
+      const anim = anims[idx];
 
-      RNAnimated.loop(
-        RNAnimated.sequence([
-          RNAnimated.delay(startDelay),
-          RNAnimated.timing(anim, {
-            toValue: 1,
-            duration: travelDurationForIdx,
-            easing: Easing.linear,
-            useNativeDriver: false,
-          }),
-          // reset immediately to start position
-          RNAnimated.timing(anim, {
-            toValue: 0,
-            duration: 0,
-            useNativeDriver: false,
-          }),
-          RNAnimated.delay(idleDelayMs),
-        ])
-      ).start();
+      const run = () => {
+        anim.stopAnimation();
+        anim.setValue(0);
+
+        const travelDuration = idx === 1 ? BASE_TRAVEL_DURATION + 800 : BASE_TRAVEL_DURATION;
+        const idleDuration = Math.max(0, IDLE_INTERVAL - travelDuration);
+
+        const timing = Animated.timing(anim, {
+          toValue: 1,
+          duration: travelDuration,
+          easing: Easing.linear,
+          useNativeDriver: false,
+        });
+
+        timing.start(({ finished }) => {
+          if (!finished) {
+            return;
+          }
+          playLottie();
+          anim.setValue(0);
+          if (timeoutRefs.current[idx]) {
+            clearTimeout(timeoutRefs.current[idx]!);
+          }
+          const timeout = setTimeout(run, idleDuration);
+          timeoutRefs.current[idx] = timeout;
+        });
+
+        animationStops[idx] = () => anim.stopAnimation();
+      };
+
+      run();
     });
-  }, []);
+
+    return () => {
+      animationStops.forEach((stop) => stop && stop());
+      timeoutRefs.current.forEach((timeout, timeoutIdx) => {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeoutRefs.current[timeoutIdx] = null;
+        }
+      });
+    };
+  }, [connectors, anims]);
 
   return (
     <View style={styles.container}>
@@ -72,24 +117,46 @@ export default function Onboarding4Slide1() {
         <View style={styles.centerCard}>
           <WaveIcon width={28} height={28} />
           <LottieView
+            ref={lottieRef}
             style={styles.centerLottie}
             source={{ uri: 'https://lottie.host/0a945edb-45a6-4428-a4c2-7bedbe7286d5/HwhE7cZW7V.lottie' }}
-            autoPlay
-            loop
+            autoPlay={false}
+            loop={false}
           />
           <Text style={styles.timerText}>00:01:24</Text>
         </View>
 
-        {/* Yellow connector animated glow */}
+        {/* Yellow connectors */}
         <Svg style={styles.connector}>
+          {connectors.map((c, idx) => (
+            <Line
+              key={`conn-base-${idx}`}
+              x1={String(c.x1)}
+              y1={String(c.y1)}
+              x2={String(c.x2)}
+              y2={String(c.y2)}
+              stroke="#FFF039"
+              strokeWidth="3"
+            />
+          ))}
           {connectors.map((c, idx) => {
-            const cx = anims[idx].interpolate({ inputRange: [0, 1], outputRange: [c.x2, c.x1] });
-            const cy = anims[idx].interpolate({ inputRange: [0, 1], outputRange: [c.y2, c.y1] });
+            const cx = anims[idx].interpolate({
+              inputRange: [0, 1],
+              outputRange: [c.x2, c.x1],
+            });
+            const cy = anims[idx].interpolate({
+              inputRange: [0, 1],
+              outputRange: [c.y2, c.y1],
+            });
+
             return (
-              <React.Fragment key={`conn-${idx}`}>
-                <Line x1={String(c.x1)} y1={String(c.y1)} x2={String(c.x2)} y2={String(c.y2)} stroke="#FFF039" strokeWidth="3" />
-                <AnimatedCircle cx={cx} cy={cy} r={4} fill="rgb(255, 174, 1)" />
-              </React.Fragment>
+              <AnimatedCircle
+                key={`conn-dot-${idx}`}
+                cx={cx}
+                cy={cy}
+                r={DOT_RADIUS}
+                fill="rgba(255, 174, 1, 0.95)"
+              />
             );
           })}
         </Svg>
@@ -166,18 +233,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
-  },
-  waveBarRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 4,
-    marginTop: 8,
-  },
-  waveBar: {
-    width: 6,
-    backgroundColor: '#1A73E8',
-    borderRadius: 2,
-    marginHorizontal: 2,
   },
   timerText: {
     marginTop: 2,

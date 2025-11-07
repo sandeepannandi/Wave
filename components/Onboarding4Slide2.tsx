@@ -4,6 +4,12 @@ import Svg, { Path, Circle, Polyline } from 'react-native-svg';
 import SummaryStar from '../assets/summarystart.svg';
 import PhoneIcon from '../assets/phone.jpg';
 import TeamsIcon from '../assets/teams.jpg';
+import Arrow1 from '../assets/arrow1.svg';
+import Arrow2 from '../assets/arrow2.svg';
+import Arrow3 from '../assets/arrow3.svg';
+import Arrow4 from '../assets/arrow4.svg';
+import Arrow5 from '../assets/arrow5.svg';
+import BlueStar from '../assets/bluestar.svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -13,7 +19,7 @@ const PillLoader = () => {
   useEffect(() => {
     const timing = Animated.timing(rotation, {
       toValue: 1,
-      duration: 3000,
+      duration: 6000,
       easing: Easing.linear,
       useNativeDriver: true,
     });
@@ -131,6 +137,26 @@ export default function Onboarding4Slide2() {
           </View>
         </View>
 
+        <View style={styles.arrowRecord}>
+          <Arrow1 width={54} height={60} />
+        </View>
+        <View style={styles.arrowPhone}>
+          <Arrow2 width={12} height={46} />
+        </View>
+        <View style={styles.arrowTeams}>
+          <Arrow3 width={54} height={60} />
+        </View>
+        <View style={styles.arrowPillToTranscribing}>
+          <Arrow4 width={100} height={52} />
+        </View>
+        <View style={styles.arrowTranscribingToSummary}>
+          <Arrow5 width={72} height={58} />
+        </View>
+
+        <View style={styles.starBesidePill}>
+          <BlueStar width={38} height={38} />
+        </View>
+
         {/* Pills and summary card */}
         <View style={[styles.pillBox, styles.shadowSoft]}>
           <Text style={styles.pillText}>Multiple speakers detected</Text>
@@ -216,17 +242,48 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(223,223,223,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 10,
+    zIndex: 999,
   },
   iconBoxMiddle: {
-    marginLeft: 16,
+    marginLeft: 8,
   },
   iconBoxRight: {
-    marginLeft: 16,
+    marginLeft: 8,
   },
   iconImage: {
     width: 32,
     height: 32,
+  },
+  arrowRecord: {
+    position: 'absolute',
+    top: 55,
+    left: 126,
+  },
+  arrowPhone: {
+    position: 'absolute',
+    top: 62,
+    left: 188,
+  },
+  arrowTeams: {
+    position: 'absolute',
+    top: 55,
+    right: 120,
+  },
+  arrowPillToTranscribing: {
+    position: 'absolute',
+    top: 152,
+    left: 120,
+  },
+  arrowTranscribingToSummary: {
+    position: 'absolute',
+    top: 223,
+    right: 84,
+  },
+  starBesidePill: {
+    position: 'absolute',
+    top: 90,
+    right: 68,
+    zIndex: 1000,
   },
   pillBox: {
     position: 'absolute',
@@ -240,7 +297,7 @@ const styles = StyleSheet.create({
   },
   pillLeft: {
     position: 'absolute',
-    top: 195,
+    top: 205,
     left: 32,
     paddingHorizontal: 18,
     paddingVertical: 10,
@@ -273,7 +330,7 @@ const styles = StyleSheet.create({
   },
   summaryCard: {
     position: 'absolute',
-    top: 270,
+    top: 280,
     right: 20,
     width: 200,
     backgroundColor: '#fff',
