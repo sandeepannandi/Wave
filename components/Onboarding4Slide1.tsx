@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image, Animated, Easing } from 'react-native';
 import Svg, { Line, Circle } from 'react-native-svg';
 import LottieView from 'lottie-react-native';
-import YouTube from '../assets/yt.jpg';
-import GMeet from '../assets/gmeet.jpg';
-import Teams from '../assets/teams.jpg';
-import Zoom from '../assets/zoom.jpg';
-import IPod from '../assets/ipod.jpg';
-import BlueCall from '../assets/phone.jpg';
-import BlueSpeak from '../assets/speak.jpg';
+import YouTubeIcon from '../assets/youtube.svg';
+import GMeetIcon from '../assets/gmeet.svg';
+import TeamsIcon from '../assets/teams.svg';
+import ZoomIcon from '../assets/zoom.svg';
+import IPodIcon from '../assets/ipod.svg';
+import BlueCallIcon from '../assets/bluecall.svg';
+import BlueSpeakIcon from '../assets/bluespeak.svg';
 import WaveIcon from '../assets/waveicon.svg';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -163,25 +163,25 @@ export default function Onboarding4Slide1() {
 
         {/* Outer icon boxes */}
         <View style={[styles.iconBox, styles.boxYouTube]}>
-          <Image source={YouTube} style={styles.appIcon} />
+          <YouTubeIcon width={38} height={38} />
         </View>
         <View style={[styles.iconBox, styles.boxIPod]}>
-          <Image source={IPod} style={[styles.appIcon, { height: 36, width: 364}]}  />
+          <IPodIcon width={50} height={50} />
         </View>
         <View style={[styles.iconBox, styles.boxTeams]}>
-          <Image source={Teams} style={styles.appIcon} />
+          <TeamsIcon width={36} height={36} />
         </View>
         <View style={[styles.iconBox, styles.boxGMeet]}>
-          <Image source={GMeet} style={styles.appIcon} />
+          <GMeetIcon width={40} height={40} />
         </View>
         <View style={[styles.iconBox, styles.boxZoom]}>
-          <Image source={Zoom} style={styles.appIcon} />
+          <ZoomIcon width={40} height={40} />
         </View>
         <View style={[styles.iconBox, styles.boxSpeak]}>
-          <Image source={BlueSpeak} style={styles.appIcon} />
+          <BlueSpeakIcon width={40} height={40} />
         </View>
         <View style={[styles.iconBox, styles.boxCall]}>
-          <Image source={BlueCall} style={[styles.appIcon, { height: 34, width: 364}]} />
+          <BlueCallIcon width={36} height={36} />
         </View>
       </View>
       <Text style={styles.title}>Audio Capture {'\n'} Made Simple</Text>

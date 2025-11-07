@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Dimensions, Image, Animated, Easing } from 'react-native';
 import Svg, { Path, Circle, Polyline } from 'react-native-svg';
 import SummaryStar from '../assets/summarystart.svg';
-import PhoneIcon from '../assets/phone.jpg';
-import TeamsIcon from '../assets/teams.jpg';
+import PhoneIcon from '../assets/bluecall.svg';
+import TeamsIcon from '../assets/teams.svg';
+import RecordIcon from '../assets/record.svg';
 import Arrow1 from '../assets/arrow1.svg';
 import Arrow2 from '../assets/arrow2.svg';
 import Arrow3 from '../assets/arrow3.svg';
@@ -123,17 +124,14 @@ export default function Onboarding4Slide2() {
 
         {/* Top three icon boxes */}
         <View style={styles.iconBoxesRow}>
-          <View style={[styles.iconBox, styles.shadowSoft]}>
-            <Svg width={24} height={24} viewBox="0 0 24 24">
-              <Circle cx="12" cy="12" r="10" fill="#FF4D6D" />
-              <Circle cx="12" cy="12" r="6" fill="#fff" />
-            </Svg>
+          <View style={[styles.recordbox, styles.shadowSoft]}>
+            <RecordIcon width={44} height={44} />
           </View>
           <View style={[styles.iconBox, styles.iconBoxMiddle, styles.shadowSoft]}>
-            <Image source={PhoneIcon} style={styles.iconImage} resizeMode="contain" />
+            <PhoneIcon width={34} height={34} />
           </View>
           <View style={[styles.iconBox, styles.iconBoxRight, styles.shadowSoft]}>
-            <Image source={TeamsIcon} style={styles.iconImage} resizeMode="contain" />
+            <TeamsIcon width={32} height={32} />
           </View>
         </View>
 
@@ -241,6 +239,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(223,223,223,0.4)',
     alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999,
+  },
+  recordbox:{
+    width: 60,
+    height: 60,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(223,223,223,0.4)',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     zIndex: 999,
   },
