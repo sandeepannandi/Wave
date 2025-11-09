@@ -24,6 +24,15 @@ export default function Onboarding4({ onContinue }: Onboarding4Props) {
     setCurrentIndex(index);
   };
 
+  // Reset to first slide when component mounts
+  useEffect(() => {
+    scrollViewRef.current?.scrollTo({
+      x: 0,
+      animated: false,
+    });
+    setCurrentIndex(0);
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => {
@@ -34,7 +43,7 @@ export default function Onboarding4({ onContinue }: Onboarding4Props) {
         });
         return nextIndex;
       });
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, []);

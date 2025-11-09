@@ -11,6 +11,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState(1);
+  const [onboarding4Key, setOnboarding4Key] = useState(0);
   const slideAnim1 = useRef(new Animated.Value(0)).current;
   const slideAnim2 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const slideAnim3 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
@@ -48,29 +49,13 @@ export default function App() {
       }),
     ]).start(() => {
       setCurrentScreen(3);
+      setOnboarding4Key(prev => prev + 1); // Reset carousel to first slide
     });
   };
 
-  const handleContinueToSignup = () => {
+  const handleContinueToOnboarding3 = () => {
     Animated.parallel([
       Animated.timing(slideAnim3, {
-        toValue: -SCREEN_WIDTH,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim4, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setCurrentScreen(4);
-    });
-  };
-
-  const handleSignupToOnboarding3 = () => {
-    Animated.parallel([
-      Animated.timing(slideAnim4, {
         toValue: -SCREEN_WIDTH,
         duration: 250,
         useNativeDriver: true,
@@ -82,6 +67,23 @@ export default function App() {
       }),
     ]).start(() => {
       setCurrentScreen(5);
+    });
+  };
+
+  const handleOnboarding3ToSignup = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim5, {
+        toValue: -SCREEN_WIDTH,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim4, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setCurrentScreen(4);
     });
   };
 
@@ -141,17 +143,7 @@ export default function App() {
           ]}
         >
           {/* Screen 3 is the carousel */}
-          <Onboarding4 onContinue={handleContinueToSignup} />
-        </Animated.View>
-        <Animated.View
-          style={[
-            styles.screen,
-            {
-              transform: [{ translateX: slideAnim4 }],
-            },
-          ]}
-        >
-          <Signup onProviderPress={handleSignupToOnboarding3} />
+          <Onboarding4 key={`onboarding4-${onboarding4Key}`} onContinue={handleContinueToOnboarding3} />
         </Animated.View>
         <Animated.View
           style={[
@@ -161,7 +153,17 @@ export default function App() {
             },
           ]}
         >
-          <Onboarding3 onContinue={() => {}} />
+          <Onboarding3 onContinue={handleOnboarding3ToSignup} />
+        </Animated.View>
+        <Animated.View
+          style={[
+            styles.screen,
+            {
+              transform: [{ translateX: slideAnim4 }],
+            },
+          ]}
+        >
+          <Signup onProviderPress={() => {}} />
         </Animated.View>
       </View>
     </SafeAreaProvider>
