@@ -11,7 +11,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState(1);
-  const [onboarding4Key, setOnboarding4Key] = useState(0);
+  const [onboarding4ResetTrigger, setOnboarding4ResetTrigger] = useState(0);
+  const onboarding4Opacity = useRef(new Animated.Value(0)).current;
   const slideAnim1 = useRef(new Animated.Value(0)).current;
   const slideAnim2 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
   const slideAnim3 = useRef(new Animated.Value(SCREEN_WIDTH)).current;
@@ -36,6 +37,12 @@ export default function App() {
   };
 
   const handleContinue = () => {
+    // Hide carousel content during transition
+    onboarding4Opacity.setValue(0);
+    
+    // Trigger reset before transition starts
+    setOnboarding4ResetTrigger(prev => prev + 1);
+    
     Animated.parallel([
       Animated.timing(slideAnim2, {
         toValue: -SCREEN_WIDTH,
@@ -49,7 +56,12 @@ export default function App() {
       }),
     ]).start(() => {
       setCurrentScreen(3);
-      setOnboarding4Key(prev => prev + 1); // Reset carousel to first slide
+      // Fade in carousel after transition completes
+      Animated.timing(onboarding4Opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
     });
   };
 
@@ -99,6 +111,9 @@ export default function App() {
       slideAnim3.setValue(SCREEN_WIDTH);
       slideAnim4.setValue(SCREEN_WIDTH);
       slideAnim5.setValue(SCREEN_WIDTH);
+      // Preload: Reset carousel when on Onboarding2 screen
+      setOnboarding4ResetTrigger(prev => prev + 1);
+      onboarding4Opacity.setValue(0);
     } else if (currentScreen === 3) {
       slideAnim3.setValue(0);
       slideAnim4.setValue(SCREEN_WIDTH);
@@ -143,7 +158,9 @@ export default function App() {
           ]}
         >
           {/* Screen 3 is the carousel */}
-          <Onboarding4 key={`onboarding4-${onboarding4Key}`} onContinue={handleContinueToOnboarding3} />
+          <Animated.View style={{ flex: 1, opacity: onboarding4Opacity }}>
+            <Onboarding4 onContinue={handleContinueToOnboarding3} resetTrigger={onboarding4ResetTrigger} />
+          </Animated.View>
         </Animated.View>
         <Animated.View
           style={[

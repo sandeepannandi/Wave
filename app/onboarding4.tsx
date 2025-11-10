@@ -12,11 +12,27 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface Onboarding4Props {
   onContinue?: () => void;
+  resetTrigger?: number;
 }
 
-export default function Onboarding4({ onContinue }: Onboarding4Props) {
+export default function Onboarding4({ onContinue, resetTrigger }: Onboarding4Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const resetToFirst = () => {
+    scrollViewRef.current?.scrollTo({
+      x: 0,
+      animated: false,
+    });
+    setCurrentIndex(0);
+  };
+
+  // Reset when resetTrigger changes
+  useEffect(() => {
+    if (resetTrigger !== undefined && resetTrigger > 0) {
+      resetToFirst();
+    }
+  }, [resetTrigger]);
 
   const handleScroll = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -26,11 +42,7 @@ export default function Onboarding4({ onContinue }: Onboarding4Props) {
 
   // Reset to first slide when component mounts
   useEffect(() => {
-    scrollViewRef.current?.scrollTo({
-      x: 0,
-      animated: false,
-    });
-    setCurrentIndex(0);
+    resetToFirst();
   }, []);
 
   useEffect(() => {

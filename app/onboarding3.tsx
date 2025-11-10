@@ -141,11 +141,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 12,
     marginHorizontal: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 0,
   },
   optionButtonSelected: {
     backgroundColor: 'rgba(255, 240, 57, 0.4)',
