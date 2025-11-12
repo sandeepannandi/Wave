@@ -11,6 +11,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState(1);
+  const [showTransitionVeil, setShowTransitionVeil] = useState(false);
   const [onboarding4ResetTrigger, setOnboarding4ResetTrigger] = useState(0);
   const onboarding4Opacity = useRef(new Animated.Value(0)).current;
   const slideAnim1 = useRef(new Animated.Value(0)).current;
@@ -39,6 +40,7 @@ export default function App() {
   const handleContinue = () => {
     // Hide carousel content during transition
     onboarding4Opacity.setValue(0);
+    setShowTransitionVeil(true);
     
     // Trigger reset before transition starts
     setOnboarding4ResetTrigger(prev => prev + 1);
@@ -46,22 +48,19 @@ export default function App() {
     Animated.parallel([
       Animated.timing(slideAnim2, {
         toValue: -SCREEN_WIDTH,
-        duration: 250,
+        duration: 100,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim3, {
         toValue: 0,
-        duration: 250,
+        duration: 100,
         useNativeDriver: true,
       }),
     ]).start(() => {
       setCurrentScreen(3);
-      // Fade in carousel after transition completes
-      Animated.timing(onboarding4Opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+      // Instantly reveal carousel content
+      onboarding4Opacity.setValue(1);
+      setShowTransitionVeil(false);
     });
   };
 
@@ -183,6 +182,10 @@ export default function App() {
           <Signup onProviderPress={() => {}} />
         </Animated.View>
       </View>
+      {/* Left-edge seam guard to mask any subpixel gaps */}
+      <View pointerEvents="none" style={styles.leftSeamGuard} />
+      {/* Fullscreen veil to prevent any flash during critical transitions */}
+      {showTransitionVeil ? <View pointerEvents="none" style={styles.veil} /> : null}
     </SafeAreaProvider>
   );
 }
@@ -191,6 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
+    backgroundColor: '#FFFFFF',
   },
   screen: {
     position: 'absolute',
@@ -198,6 +202,23 @@ const styles = StyleSheet.create({
     height: '100%',
     top: 0,
     left: 0,
+    backgroundColor: '#FFFFFF',
+  },
+  veil: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+  },
+  leftSeamGuard: {
+    position: 'absolute',
+    top: 0,
+    left: -4,
+    width: 4,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
   },
 });
 
